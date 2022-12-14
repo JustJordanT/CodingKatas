@@ -9,3 +9,4 @@ A minimal project for coding katas, 🥷🏽 a kata a day keeps unemployment awa
 
 [Referance link](https://en.wikipedia.org/wiki/Kata)
 
+[Robert C Martin on Coding Katas](https://www.youtube.com/watch?v=ZkFGTGXsKeU)
