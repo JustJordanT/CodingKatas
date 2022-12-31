@@ -1,7 +1,16 @@
-﻿namespace CodingKata.BankAccount;
+﻿using CodingKata.BankAccount.Console.Services;
+using Serilog;
+
+namespace CodingKata.BankAccount;
 
 public class BankAccount
 {
+    private readonly LoggerService _loggerService;
+    
+    // public BankAccount(LoggerService loggerService)
+    // {
+    // }
+    
     private decimal _initialDeposit;
 
     public BankAccount()
@@ -10,8 +19,21 @@ public class BankAccount
     }
 
     public BankAccount(
+        LoggerService loggerService,
         string accountName,
-        AccountHolder accountHolder,
+        AccountHolder? accountHolder,
+        AccountType accountType,
+        decimal initialDeposit)
+    {
+        _loggerService = loggerService ?? throw new ArgumentNullException(nameof(loggerService));
+        AccountName = accountName;
+        AccountHolder = accountHolder;
+        AccountType = accountType;
+        InitialDeposit = initialDeposit;
+    } 
+    public BankAccount(
+        string accountName,
+        AccountHolder? accountHolder,
         AccountType accountType,
         decimal initialDeposit)
     {
@@ -23,7 +45,7 @@ public class BankAccount
 
     private Guid AccountNumber { get; set; } = Guid.NewGuid();
     private string AccountName { get; set; } = string.Empty;
-    private AccountHolder AccountHolder { get; set; }
+    private AccountHolder? AccountHolder { get; set; }
     private AccountType AccountType { get; set; }
     private decimal InitialDeposit {
         get => _initialDeposit;
@@ -44,14 +66,15 @@ public class BankAccount
     public string Deposit(decimal amount, string description)
     {
         AccountBalance += amount;
-        Console.WriteLine(description);
         // TODO add this to a log file. adding date time and  description to log file.
+        _loggerService.Deposit($"{AccountAction.Deposit}: ({amount}) - has been successfully deposited into account {AccountNumber} - {description}");
         return $"{amount} - has been successfully deposited into account {AccountNumber}";
     }
-    public void Withdraw(decimal amount, string description)
+    public string Withdraw(decimal amount, string description)
     {
-        AccountBalance += amount;
-        // TODO add this to a log file. adding date time and  description to log file.
+        AccountBalance -= amount;
+        _loggerService.Withdraw($"{AccountAction.Withdrawal}: ({amount}) - has been successfully withdrawn from account {AccountNumber} - {description}");
+        return $"{amount} - has been successfully withdrawn from account - {AccountNumber}"; 
     }
     public void GetTransactions(decimal amount)
     {
@@ -59,7 +82,7 @@ public class BankAccount
         // TODO add this to a log file. adding date time and  description to log file.
     }
 
-    public string GetAccountBalance() => $"Current Balance: {AccountBalance}";
+    public decimal GetAccountBalance() => AccountBalance; 
 
     public string AccountDetails()
     {
